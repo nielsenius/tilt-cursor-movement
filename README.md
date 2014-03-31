@@ -23,9 +23,17 @@ The programming language used to implement this prototype is RubyMotion: a propr
 * RubyMotion is a combination of Ruby and Obj-C. It is compiled in the form of an iOS app. This technology is proprietary and costs money to own.
 * Rails developers will feel relatively at home with RubyMotion. All commands are run through the terminal. `rake` and `motion` are the commands used to complete most tasks.
 * RubyMotion apps are fully App Store complient (assuming the developer has followed the proper guidelines).
+* When reading RubyMotion code, you will notice both snake\_case and camelCase being used. Snake\_case is used on the Ruby side and camelCase is from the Obj-C side.
 
 ## Contributors
 
 * Folashade Okunubi
 * Hayden Demerson
 * Matt Nielsen
+
+### Bugs / Needs Work
+
+* MVC style may not be 100% right now. Efforts will be made to keep the logic in the model, the displays in the view, and the interactions in the controller.
+* Side-to-side movement is working, but up-and-down movement is not at this time.
+* Movement is still buggy. Finding the right threshold for movement will be trial and error, as will finding a good sampling rate for gyroscope data.
+* No user testing framework has been implemented. How long this takes will depend on how we are testing users.

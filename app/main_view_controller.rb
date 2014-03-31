@@ -27,8 +27,9 @@ class MainViewController < UIViewController
     super
     
     sample_rate = 0.5
-    movement_threshold = 0.2
-    @model = MainModel.new(sample_rate, movement_threshold)
+    movement_threshold = 1.75
+    text = 'Here is some sample text.'
+    @model = MainModel.new(sample_rate, movement_threshold, text)
     
     load_text_field
     load_accelerometer
@@ -40,6 +41,8 @@ class MainViewController < UIViewController
   
   def load_text_field
     @text_field = self.view.viewWithTag 1
+    @text_field.text = @model.text
+    @text_field.becomeFirstResponder
   end
   
   def load_accelerometer
@@ -49,7 +52,7 @@ class MainViewController < UIViewController
       queue = NSOperationQueue.currentQueue
 
       @motion_manager.startDeviceMotionUpdatesToQueue(queue, withHandler: lambda do |motion, error|
-        NSLog "X: %@, Y: %@, Z: %@", "%.3f" % motion.rotationRate.x, "%.3f" % motion.rotationRate.y, "%.3f" % motion.rotationRate.z
+        # NSLog "X: %@, Y: %@, Z: %@", "%.3f" % motion.rotationRate.x, "%.3f" % motion.rotationRate.y, "%.3f" % motion.rotationRate.z
         handle_motion(motion.rotationRate)
       end)
     else
@@ -67,10 +70,16 @@ class MainViewController < UIViewController
   end
   
   def move_cursor(dir)
-    selected = @text_field.selectedTextRange
-    new_pos = @text_field.positionFromPosition(selected.start, offset: dir)
+    # calculate old cursor position and new cursor position
+    selected  = @text_field.selectedTextRange
+    new_pos   = @text_field.positionFromPosition(selected.start, offset: dir)
+    pos_test  = @text_field.positionFromPosition(selected.start, offset: dir - 1)
     new_range = @text_field.textRangeFromPosition(new_pos, toPosition: new_pos)
-    @text_field.setSelectedTextRange new_range
+    # move the cursor if not at the end of the document (prevent wrap around)
+    # and not going to the right
+    unless pos_test == @text_field.endOfDocument && dir > 0
+      @text_field.setSelectedTextRange new_range
+    end
   end
   
   # def show_alert

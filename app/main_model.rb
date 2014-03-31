@@ -1,10 +1,11 @@
 class MainModel
   
-  attr_accessor :x, :y, :z
+  attr_accessor :x, :y, :z, :text
   
-  def initialize(sample_rate, movement_threshold)
+  def initialize(sample_rate, movement_threshold, text)
     @sample_rate = sample_rate
     @threshold = movement_threshold
+    @text = text
     @x = 0
     @y = 0
     @z = 0
@@ -17,22 +18,28 @@ class MainModel
   end
   
   def should_move_cursor?
-    @x.abs > @threshold || @y.abs > @threshold || @z.abs > @threshold
+    # @x.abs > @threshold || @y.abs > @threshold || @z.abs > @threshold
+    @y.abs > @threshold
   end
   
   def cursor_direction
-    if @x > @threshold
-      0
-    elsif @x < -@threshold
-      0
-    elsif @y > @threshold
+    NSLog @y.to_s
+    if @y > @threshold
       1
     elsif @y < -@threshold
       -1
-    elsif @z > @threshold
-      0
-    elsif @z < -@threshold
-      0
+    # if @x > @threshold
+    #   0
+    # elsif @x < -@threshold
+    #   0
+    # elsif @y > @threshold
+    #   1
+    # elsif @y < -@threshold
+    #   -1
+    # elsif @z > @threshold
+    #   0
+    # elsif @z < -@threshold
+    #   0
     end
   end
   
