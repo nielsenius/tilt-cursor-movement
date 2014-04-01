@@ -10,16 +10,17 @@ class MainViewController < UIViewController
   # launch sequence
   #
   
-  def iphone_4_inch?
-    UIScreen.mainScreen.bounds.size.height == 568.0
-  end
+  # def iphone_4_inch?
+  #   UIScreen.mainScreen.bounds.size.height == 568.0
+  # end
   
   def loadView
-    if iphone_4_inch?
-      views = NSBundle.mainBundle.loadNibNamed 'MainView', owner: self, options: nil
-    else
-      views = NSBundle.mainBundle.loadNibNamed 'MainViewShort', owner: self, options: nil
-    end
+    # if iphone_4_inch?
+    #   views = NSBundle.mainBundle.loadNibNamed 'MainView', owner: self, options: nil
+    # else
+    #   views = NSBundle.mainBundle.loadNibNamed 'MainViewShort', owner: self, options: nil
+    # end
+    views = NSBundle.mainBundle.loadNibNamed 'MainView', owner: self, options: nil
     self.view = views.first
   end
 
