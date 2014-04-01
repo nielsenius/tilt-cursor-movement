@@ -18,7 +18,7 @@ Motion::Project::App.setup do |app|
   app.device_family = [:iphone]
   app.interface_orientations = [:portrait]
   
-  app.sdk_version = '7.0'
+  app.sdk_version = '7.1'
   app.version = '1.0.0'
   
   app.identifier = 'com.mqn.tiltor'

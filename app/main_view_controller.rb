@@ -26,10 +26,7 @@ class MainViewController < UIViewController
   def viewDidLoad
     super
     
-    sample_rate = 0.5
-    movement_threshold = 1.75
-    text = 'Here is some sample text.'
-    @model = MainModel.new(sample_rate, movement_threshold, text)
+    @model = MainModel.new
     
     load_text_field
     load_accelerometer
@@ -42,15 +39,16 @@ class MainViewController < UIViewController
   def load_text_field
     @text_field = self.view.viewWithTag 1
     @text_field.text = @model.text
+    # place cursor when app is launched, error occurs otherwise
     @text_field.becomeFirstResponder
   end
   
   def load_accelerometer
     @motion_manager = CMMotionManager.alloc.init
-    @motion_manager.deviceMotionUpdateInterval = 0.1
+    @motion_manager.deviceMotionUpdateInterval = @model.sample_rate
+    
     if (@motion_manager.isDeviceMotionAvailable)
       queue = NSOperationQueue.currentQueue
-
       @motion_manager.startDeviceMotionUpdatesToQueue(queue, withHandler: lambda do |motion, error|
         # NSLog "X: %@, Y: %@, Z: %@", "%.3f" % motion.rotationRate.x, "%.3f" % motion.rotationRate.y, "%.3f" % motion.rotationRate.z
         handle_motion(motion.rotationRate)
@@ -75,6 +73,7 @@ class MainViewController < UIViewController
     new_pos   = @text_field.positionFromPosition(selected.start, offset: dir)
     pos_test  = @text_field.positionFromPosition(selected.start, offset: dir - 1)
     new_range = @text_field.textRangeFromPosition(new_pos, toPosition: new_pos)
+    
     # move the cursor if not at the end of the document (prevent wrap around)
     # and not going to the right
     unless pos_test == @text_field.endOfDocument && dir > 0
