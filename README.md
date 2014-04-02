@@ -34,5 +34,5 @@ The programming language used to implement this prototype is RubyMotion: a propr
 ### Bugs / Needs Work
 
 * MVC style may not be 100% right now. Efforts will be made to keep the logic in the model, the displays in the view, and the interactions in the controller.
-* Side-to-side movement is working, but up-and-down movement is not at this time.
 * Movement is still buggy. Finding the right threshold for movement will be trial and error, as will finding a good sampling rate for gyroscope data.
+* Testing framework still needs to be added to the app.
