@@ -39,7 +39,7 @@ class MainViewController < UIViewController
   
   def load_text_field
     @text_field = self.view.viewWithTag 1
-    @text_field.text = @model.text
+    @text_field.text = 'Here is some sample text to play around with.'
     # place cursor when app is launched, error occurs otherwise
     @text_field.becomeFirstResponder
   end
@@ -72,12 +72,17 @@ class MainViewController < UIViewController
     # calculate old cursor position and new cursor position
     selected  = @text_field.selectedTextRange
     new_pos   = @text_field.positionFromPosition(selected.start, offset: dir)
-    pos_test  = @text_field.positionFromPosition(selected.start, offset: dir - 1)
     new_range = @text_field.textRangeFromPosition(new_pos, toPosition: new_pos)
     
-    # move the cursor if not at the end of the document (prevent wrap around)
-    # and not going to the right
-    unless pos_test == @text_field.endOfDocument && dir > 0
+    # distance to the beginning and end of text in relation to cursor
+    beginning_offset = @text_field.offsetFromPosition(@text_field.beginningOfDocument, toPosition: selected.start)
+    end_offset = @text_field.offsetFromPosition(selected.start, toPosition: @text_field.endOfDocument)
+    
+    # ensure that cursor will not wrap around inappropriately
+    unless (selected.start == @text_field.endOfDocument && dir > 0) ||
+           (beginning_offset < -dir && dir < -1) ||
+           (end_offset < dir && dir > 1)
+      # move the cursor
       @text_field.setSelectedTextRange new_range
     end
   end

@@ -1,6 +1,6 @@
 class MainModel
   
-  attr_accessor :sample_rate, :move_rate, :timer, :threshold, :text, :x, :y
+  attr_accessor :sample_rate, :move_rate, :timer, :threshold, :x, :y
   
   TEXT_FIELD_WIDTH = 24
   
@@ -9,7 +9,6 @@ class MainModel
     @move_rate   = 0.5
     @timer       = 0.0
     @threshold   = 0.5
-    @text        = 'Here is some sample text to play around with.'
     
     @x = 0
     @y = 0
