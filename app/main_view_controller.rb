@@ -28,8 +28,11 @@ class MainViewController < UIViewController
     super
     
     @model = MainModel.new
+    @testing = false
     
     load_text_field
+    load_trial_label
+    load_test_button
     load_accelerometer
   end
   
@@ -42,6 +45,16 @@ class MainViewController < UIViewController
     @text_field.text = 'Here is some sample text to play around with.'
     # place cursor when app is launched, error occurs otherwise
     @text_field.becomeFirstResponder
+  end
+  
+  def load_trial_label
+    @trial_label = self.view.viewWithTag 2
+    @trial_label.setHidden(true)
+  end
+  
+  def load_test_button
+    @test_button = self.view.viewWithTag 3
+    @test_button.addTarget(self, action: 'button_press', forControlEvents: UIControlEventTouchDown)
   end
   
   def load_accelerometer
@@ -84,6 +97,16 @@ class MainViewController < UIViewController
            (end_offset < dir && dir > 1)
       # move the cursor
       @text_field.setSelectedTextRange new_range
+    end
+  end
+  
+  def button_press
+    if @testing
+      @testing = false
+      @test_button.setTitle('Start Test')
+    else
+      @testing = true
+      @test_button.setTitle('Cancel Test')
     end
   end
   
