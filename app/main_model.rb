@@ -6,9 +6,9 @@ class MainModel
   
   def initialize
     @sample_rate = 0.05
-    @move_rate   = 0.5
+    @move_rate   = 0.2
     @timer       = 0.0
-    @threshold   = 0.5
+    @threshold   = 0.4
     
     @x = 0
     @y = 0
