@@ -1,6 +1,6 @@
 class MainModel
   
-  attr_accessor :sample_rate, :move_rate, :timer, :threshold, :x, :y
+  attr_accessor :sample_rate, :move_rate, :timer, :threshold, :x, :y, :test_data
   
   TEXT_FIELD_WIDTH = 24
   
@@ -12,6 +12,10 @@ class MainModel
     
     @x = 0
     @y = 0
+    
+    @test_text   = 'ooooo ooooo ooooo ooooo ooooo ooooo ooooo ooooo ooooo ooooo.'
+    @word_length = 6 # 5 + 1 space
+    @test_data   = []
   end
   
   def update_movements(rotation_rate)
@@ -42,4 +46,20 @@ class MainModel
     (a - b).abs < epsilon
   end
   
+  def generate_text(trial)
+    text = @test_text.copy
+    trial = trial % (text / @word_length)
+    
+    if trial % 3 == 0
+      text[trial * @word_length - 1] = '>'
+    elsif trial % 3 == 1
+      text[trial * @word_length - @word_length] = '<'
+    elsif type % 3 == 2
+      text[trial * @word_length - @word_length / 2] = '>'
+      text[trial * @word_length - @word_length / 2 + 1] = '<'
+    end
+    
+    text
+  end
+    
 end

@@ -27,13 +27,19 @@ class MainViewController < UIViewController
   def viewDidLoad
     super
     
-    @model = MainModel.new
+    @model   = MainModel.new
     @testing = false
+    @trial   = 1
+    @time    = nil
+    @error   = 0
     
     load_text_field
     load_trial_label
     load_test_button
     load_accelerometer
+    
+    center = NSNotificationCenter.defaultCenter
+    center.addObserver(self, selector: "text_change", name: UITextViewTextDidChangeNotification, object: @text_field)
   end
   
   #
@@ -54,7 +60,7 @@ class MainViewController < UIViewController
   
   def load_test_button
     @test_button = self.view.viewWithTag 3
-    @test_button.addTarget(self, action: 'button_press', forControlEvents: UIControlEventTouchDown)
+    @test_button.addTarget(self, action: 'button_press:', forControlEvents: UIControlEventTouchDown)
   end
   
   def load_accelerometer
@@ -100,13 +106,62 @@ class MainViewController < UIViewController
     end
   end
   
-  def button_press
+  def button_press(sender)
     if @testing
       @testing = false
-      @test_button.setTitle('Start Test')
+      sender.setTitle('Begin Test', forState: UIControlStateNormal)
+      begin_trial
     else
       @testing = true
-      @test_button.setTitle('Cancel Test')
+      sender.setTitle('Cancel Test', forState: UIControlStateNormal)
+      end_testing
+    end
+  end
+  
+  # def begin_testing
+  #   count = 1
+  #   60.times do
+  #     begin_trial(count)
+  #     count += 1
+  #   end
+  #   end_testing
+  # end
+  
+  def end_testing
+    puts @model.test_data
+  end
+  
+  def begin_trial
+    # type = :append  if count % 3 == 1
+    # type = :prepend if count % 3 == 2
+    # type = :insert  if count % 3 == 3
+    
+    @text_field.setText(@model.generate_text(@trial))
+    
+    @error = 0
+    @time = Time.now
+  end
+  
+  def end_trial
+    elapse = Time.now - @time
+    
+    @model.test_data << [@trial, elapse, @error]
+    @trial += 1
+    if @trial <= 60
+      begin_trial
+    else
+      end_testing
+    end
+  end
+  
+  def text_change
+    append_idx = @text_field.text.index('>')
+    prepend_idx = @text_field.text.index('<')
+    
+    if (append_idx + 1 != ' ' && append_idx + 1 != '<') || (prepend_idx - 1 != ' ')
+      end_trial
+    else
+      @error += 1
     end
   end
   
