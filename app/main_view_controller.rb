@@ -110,11 +110,11 @@ class MainViewController < UIViewController
     if @testing
       @testing = false
       sender.setTitle('Begin Test', forState: UIControlStateNormal)
-      begin_trial
+      end_testing
     else
       @testing = true
       sender.setTitle('Cancel Test', forState: UIControlStateNormal)
-      end_testing
+      begin_trial
     end
   end
   
@@ -129,6 +129,8 @@ class MainViewController < UIViewController
   
   def end_testing
     puts @model.test_data
+    
+    @text_field.setText(@model.format_data)
   end
   
   def begin_trial
@@ -158,7 +160,8 @@ class MainViewController < UIViewController
     append_idx = @text_field.text.index('>')
     prepend_idx = @text_field.text.index('<')
     
-    if (append_idx + 1 != ' ' && append_idx + 1 != '<') || (prepend_idx - 1 != ' ')
+    if (!append_idx.nil? && @text_field.text[append_idx + 1] != ' ' && @text_field.text[append_idx + 1] != '<') ||
+       (!prepend_idx.nil? && append_idx.nil? && @text_field.text[prepend_idx - 1] != ' ')
       end_trial
     else
       @error += 1
