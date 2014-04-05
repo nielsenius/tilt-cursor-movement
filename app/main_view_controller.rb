@@ -27,15 +27,17 @@ class MainViewController < UIViewController
   def viewDidLoad
     super
     
-    @model   = MainModel.new
-    @testing = false
-    @trial   = 1
-    @time    = nil
-    @error   = 0
+    @model    = MainModel.new
+    @testing  = false
+    @trial    = 1
+    @time     = nil
+    @distance = 0
+    @error    = 0
     
     load_text_field
-    load_trial_label
     load_test_button
+    load_tilt_toggle
+    load_tilt_label
     load_accelerometer
     
     center = NSNotificationCenter.defaultCenter
@@ -53,14 +55,17 @@ class MainViewController < UIViewController
     @text_field.becomeFirstResponder
   end
   
-  def load_trial_label
-    @trial_label = self.view.viewWithTag 2
-    @trial_label.setHidden(true)
+  def load_test_button
+    @test_button = self.view.viewWithTag 2
+    @test_button.addTarget(self, action: 'button_press:', forControlEvents: UIControlEventTouchDown)
   end
   
-  def load_test_button
-    @test_button = self.view.viewWithTag 3
-    @test_button.addTarget(self, action: 'button_press:', forControlEvents: UIControlEventTouchDown)
+  def load_tilt_toggle
+    @tilt_toggle = self.view.viewWithTag 3
+  end
+  
+  def load_tilt_label
+    @tilt_label = self.view.viewWithTag 4
   end
   
   def load_accelerometer
@@ -83,8 +88,10 @@ class MainViewController < UIViewController
   #
   
   def handle_motion(rotation_rate)
-    @model.update_movements(rotation_rate)
-    move_cursor(@model.cursor_direction) if @model.should_move_cursor?      
+    if @tilt_toggle.on
+      @model.update_movements(rotation_rate)
+      move_cursor(@model.cursor_direction) if @model.should_move_cursor?
+    end
   end
   
   def move_cursor(dir)
@@ -104,6 +111,20 @@ class MainViewController < UIViewController
       # move the cursor
       @text_field.setSelectedTextRange new_range
     end
+  end
+  
+  def distance_to_target
+    selected = @text_field.selectedTextRange
+    if append_idx.nil?
+      target_idx = prepend_idx
+    else
+      target_idx = append_idx
+    end
+    
+    cursor_idx = @text_field.offsetFromPosition(@text_field.beginningOfDocument, toPosition: selected.start)
+    
+    distance = cursor_idx.abs - target_idx
+    distance.abs % @model.text_field_width
   end
   
   def button_press(sender)
@@ -128,26 +149,25 @@ class MainViewController < UIViewController
   # end
   
   def end_testing
-    puts @model.test_data
-    
     @text_field.setText(@model.format_data)
   end
   
   def begin_trial
     # type = :append  if count % 3 == 1
     # type = :prepend if count % 3 == 2
-    # type = :insert  if count % 3 == 3
+    # type = :insert  if count % 3 == 0
     
     @text_field.setText(@model.generate_text(@trial))
     
-    @error = 0
-    @time = Time.now
+    @distance = distance_to_target
+    @error    = 0
+    @time     = Time.now
   end
   
   def end_trial
     elapse = Time.now - @time
     
-    @model.test_data << [@trial, elapse, @error]
+    @model.test_data << [@trial, elapse, @distance, @error]
     @trial += 1
     if @trial <= 60
       begin_trial
@@ -157,8 +177,8 @@ class MainViewController < UIViewController
   end
   
   def text_change
-    append_idx = @text_field.text.index('>')
-    prepend_idx = @text_field.text.index('<')
+    # append_idx = @text_field.text.index('>')
+    # prepend_idx = @text_field.text.index('<')
     
     if (!append_idx.nil? && @text_field.text[append_idx + 1] != ' ' && @text_field.text[append_idx + 1] != '<') ||
        (!prepend_idx.nil? && append_idx.nil? && @text_field.text[prepend_idx - 1] != ' ')
@@ -166,6 +186,14 @@ class MainViewController < UIViewController
     else
       @error += 1
     end
+  end
+  
+  def append_idx
+    @text_field.text.index('>')
+  end
+  
+  def prepend_idx
+    @text_field.text.index('<')
   end
   
   # def show_alert

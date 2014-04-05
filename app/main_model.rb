@@ -6,15 +6,15 @@ class MainModel
   
   def initialize
     @sample_rate = 0.05
-    @move_rate   = 0.2
+    @move_rate   = 0.4
     @timer       = 0.0
-    @threshold   = 0.4
+    @threshold   = 0.3
     
     @x = 0
     @y = 0
     
-    @test_text   = 'ooooo ooooo ooooo ooooo ooooo ooooo ooooo ooooo ooooo ooooo '
-    @word_length = 6 # 5 + 1 space
+    @test_text   = "oooo oooo oooo oooo oooo\noooo oooo oooo oooo oooo\noooo oooo oooo oooo oooo"
+    @word_length = 5 # 4 + 1 space
     @test_data   = []
   end
   
@@ -55,21 +55,25 @@ class MainModel
     elsif trial % 3 == 1
       text[trial * @word_length - @word_length] = '<'
     elsif trial % 3 == 2
-      text[trial * @word_length - @word_length / 2] = '>'
-      text[trial * @word_length - @word_length / 2 + 1] = '<'
+      text[trial * @word_length - 4] = '>'
+      text[trial * @word_length - 3] = '<'
     end
     
     text
   end
   
   def format_data
-    str = "Trial, Time, Errors\n"
+    str = "Trial, Time, Distance, Errors\n"
     
     @test_data.each do |trial|
       str << "#{trial.join(', ')}\n"
     end
     
     str
+  end
+  
+  def text_field_width
+    TEXT_FIELD_WIDTH
   end
     
 end
