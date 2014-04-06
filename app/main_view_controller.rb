@@ -90,8 +90,11 @@ class MainViewController < UIViewController
   #
   
   def handle_motion(rotation_rate)
-    if @tilt_toggle.on
+    # toggle tilt cursor movement
+    if @tilt_toggle.isOn
+      # update tilt values
       @model.update_movements(rotation_rate)
+      # move the cursor in a direction
       move_cursor(@model.cursor_direction) if @model.should_move_cursor?
     end
   end
@@ -116,6 +119,7 @@ class MainViewController < UIViewController
   end
   
   def distance_to_target
+    # get the target index
     if append_idx.nil?
       target_idx = prepend_idx
     else
@@ -125,10 +129,12 @@ class MainViewController < UIViewController
     # distance = cursor_idx.abs - target_idx
     # distance.abs % @model.text_field_width
     
+    # get the full distance (need better algorithm)
     (get_cursor_idx - target_idx).abs
   end
   
   def button_press(sender)
+    # start and stop testing (begins where left off)
     if @testing
       @testing = false
       sender.setTitle('Begin Test', forState: UIControlStateNormal)
@@ -140,22 +146,16 @@ class MainViewController < UIViewController
     end
   end
   
-  # def begin_testing
-  #   count = 1
-  #   60.times do
-  #     begin_trial(count)
-  #     count += 1
-  #   end
-  #   end_testing
-  # end
-  
   def end_testing
+    # display test results in CSV format
     @text_field.setText(@model.format_data)
   end
   
   def begin_trial
+    # generate trial text
     @text_field.setText(@model.generate_text(@trials[@trial], trial_type))
     
+    # set cursor at last position, reset other values
     reset_cursor
     @distance = distance_to_target
     @error    = 0
@@ -164,12 +164,13 @@ class MainViewController < UIViewController
   
   def end_trial
     elapse = Time.now - @time
-    
+    # record trial results
     @model.test_data << [@trial, trial_type, elapse, @distance, @error]
     
     @trial += 1
     @cursor_idx = get_cursor_idx
     
+    # begin a new trial or end testing
     if @trial <= 60
       begin_trial
     else
@@ -197,9 +198,7 @@ class MainViewController < UIViewController
   end
   
   def text_change
-    # append_idx = @text_field.text.index('>')
-    # prepend_idx = @text_field.text.index('<')
-    
+    # check to see if target was hit
     if (!append_idx.nil? && @text_field.text[append_idx + 1] != ' ' && @text_field.text[append_idx + 1] != '<') ||
        (!prepend_idx.nil? && append_idx.nil? && @text_field.text[prepend_idx - 1] != ' ')
       end_trial
