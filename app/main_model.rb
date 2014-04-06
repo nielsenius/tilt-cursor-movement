@@ -46,15 +46,15 @@ class MainModel
     (a - b).abs < epsilon
   end
   
-  def generate_text(trial)
+  def generate_text(trial, type)
     text = @test_text.clone
     trial = trial % (text.length / @word_length)
     
-    if trial % 3 == 0
+    if type == 'append'
       text[trial * @word_length - 2] = '>'
-    elsif trial % 3 == 1
+    elsif type == 'prepend'
       text[trial * @word_length - @word_length] = '<'
-    elsif trial % 3 == 2
+    elsif type == 'insert'
       text[trial * @word_length - 4] = '>'
       text[trial * @word_length - 3] = '<'
     end
@@ -63,7 +63,7 @@ class MainModel
   end
   
   def format_data
-    str = "Trial, Time, Distance, Errors\n"
+    str = "Trial, Type, Time, Distance, Errors\n"
     
     @test_data.each do |trial|
       str << "#{trial.join(', ')}\n"

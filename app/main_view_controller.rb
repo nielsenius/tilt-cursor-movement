@@ -27,12 +27,14 @@ class MainViewController < UIViewController
   def viewDidLoad
     super
     
-    @model    = MainModel.new
-    @testing  = false
-    @trial    = 1
-    @time     = nil
-    @distance = 0
-    @error    = 0
+    @model      = MainModel.new
+    @testing    = false
+    @trials     = (1..60).to_a.shuffle
+    @trial      = 0
+    @time       = nil
+    @distance   = 0
+    @error      = 0
+    @cursor_idx = 0
     
     load_text_field
     load_test_button
@@ -114,17 +116,16 @@ class MainViewController < UIViewController
   end
   
   def distance_to_target
-    selected = @text_field.selectedTextRange
     if append_idx.nil?
       target_idx = prepend_idx
     else
       target_idx = append_idx
     end
+        
+    # distance = cursor_idx.abs - target_idx
+    # distance.abs % @model.text_field_width
     
-    cursor_idx = @text_field.offsetFromPosition(@text_field.beginningOfDocument, toPosition: selected.start)
-    
-    distance = cursor_idx.abs - target_idx
-    distance.abs % @model.text_field_width
+    (get_cursor_idx - target_idx).abs
   end
   
   def button_press(sender)
@@ -153,12 +154,9 @@ class MainViewController < UIViewController
   end
   
   def begin_trial
-    # type = :append  if count % 3 == 1
-    # type = :prepend if count % 3 == 2
-    # type = :insert  if count % 3 == 0
+    @text_field.setText(@model.generate_text(@trials[@trial], trial_type))
     
-    @text_field.setText(@model.generate_text(@trial))
-    
+    reset_cursor
     @distance = distance_to_target
     @error    = 0
     @time     = Time.now
@@ -167,13 +165,35 @@ class MainViewController < UIViewController
   def end_trial
     elapse = Time.now - @time
     
-    @model.test_data << [@trial, elapse, @distance, @error]
+    @model.test_data << [@trial, trial_type, elapse, @distance, @error]
+    
     @trial += 1
+    @cursor_idx = get_cursor_idx
+    
     if @trial <= 60
       begin_trial
     else
       end_testing
     end
+  end
+  
+  def trial_type
+    type = 'append'  if @trials[@trial] % 3 == 1
+    type = 'prepend' if @trials[@trial] % 3 == 2
+    type = 'insert'  if @trials[@trial] % 3 == 0
+    
+    type
+  end
+  
+  def get_cursor_idx
+    @text_field.offsetFromPosition(@text_field.beginningOfDocument, toPosition: @text_field.selectedTextRange.start)
+  end
+  
+  def reset_cursor
+    new_pos   = @text_field.positionFromPosition(@text_field.beginningOfDocument, offset: @cursor_idx - 1)
+    new_range = @text_field.textRangeFromPosition(new_pos, toPosition: new_pos)
+    
+    @text_field.setSelectedTextRange new_range
   end
   
   def text_change
@@ -195,32 +215,5 @@ class MainViewController < UIViewController
   def prepend_idx
     @text_field.text.index('<')
   end
-  
-  # def show_alert
-  #   alert = UIAlertView.alloc.initWithTitle('Welcome',
-  #                                           message: 'Enter your bill using the keypad. See Settings for options.',
-  #                                           delegate: nil,
-  #                                           cancelButtonTitle: 'OK',
-  #                                           otherButtonTitles: nil)
-  #   alert.show
-  # end
-  # 
-  # def open_review_view
-  #   msg = 'It looks like you have been using CheckMate quite a bit. Would you like to review it on the App Store?'
-  #   alert = UIAlertView.alloc.initWithTitle('Review CheckMate',
-  #                                           message: msg,
-  #                                           delegate: self,
-  #                                           cancelButtonTitle: 'No',
-  #                                           otherButtonTitles: nil)
-  #   alert.addButtonWithTitle('Yes')
-  #   alert.show
-  # end
-  # 
-  # def alertView(alertView, clickedButtonAtIndex: buttonIndex)
-  #   if buttonIndex == 1
-  #     str = "http://itunes.apple.com/app/id782864867"
-  #     UIApplication.sharedApplication.openURL(NSURL.URLWithString(str))
-  #   end
-  # end
   
 end

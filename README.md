@@ -37,5 +37,3 @@ The programming language used to implement this prototype is RubyMotion: a propr
 * Movement is still buggy. Finding the right threshold for movement will be trial and error, as will finding a good sampling rate for gyroscope data.
 * Testing framework needs work.
 	* Distance algorithm does not work properly.
-	* Testing not random.
-	* Cursor position not constant.
