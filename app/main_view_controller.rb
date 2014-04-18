@@ -1,25 +1,10 @@
 class MainViewController < UIViewController
   
   #
-  # initialize constants
-  #
-  
-  
-  
-  #
   # launch sequence
   #
   
-  # def iphone_4_inch?
-  #   UIScreen.mainScreen.bounds.size.height == 568.0
-  # end
-  
   def loadView
-    # if iphone_4_inch?
-    #   views = NSBundle.mainBundle.loadNibNamed 'MainView', owner: self, options: nil
-    # else
-    #   views = NSBundle.mainBundle.loadNibNamed 'MainViewShort', owner: self, options: nil
-    # end
     views = NSBundle.mainBundle.loadNibNamed 'MainView', owner: self, options: nil
     self.view = views.first
   end
@@ -107,7 +92,7 @@ class MainViewController < UIViewController
       # update tilt values
       @model.update_movements(rotation_rate)
       # move the cursor in a direction
-      move_cursor(@model.cursor_direction) if @model.should_move_cursor?
+      move_cursor(@model.cursor_direction)
     end
   end
   
@@ -137,12 +122,16 @@ class MainViewController < UIViewController
     else
       target_idx = append_idx
     end
-        
-    # distance = cursor_idx.abs - target_idx
-    # distance.abs % @model.text_field_width
-    
-    # get the full distance (need better algorithm)
-    (get_cursor_idx - target_idx).abs
+    # get the distance from the cursor to the target
+    distance = (get_cursor_idx - target_idx).abs
+    # calculate the number of rows and cols to target from cursor
+    rows       = distance / @model.text_field_width
+    cols_right = distance % @model.text_field_width
+    cols_left  = @model.text_field_width % distance
+    # use the smaller number of columns
+    cols_right < cols_left ? cols = cols_right : cols = cols_left
+    # add rows and columns
+    rows + cols
   end
   
   def test_button_press(sender)

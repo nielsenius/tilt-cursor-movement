@@ -21,7 +21,7 @@ Motion::Project::App.setup do |app|
   app.sdk_version = '7.1'
   app.version = '1.0.0'
   
-  app.identifier = 'com.mqn.tiltor'
+  app.identifier = 'com.mqn.tilter'
   
   app.development do
     app.entitlements['get-task-allow'] = true

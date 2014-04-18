@@ -5,10 +5,15 @@ class MainModel
   TEXT_FIELD_WIDTH = 24
   
   def initialize
-    @sample_rate = 0.05
-    @move_rate   = 0.4
-    @timer       = 0.0
-    @threshold   = 0.3
+    @slow_horizontal_move_rate = 0.5
+    @fast_horizontal_move_rate = 0.1
+    @slow_vertical_move_rate   = 0.8
+    @fast_vertical_move_rate   = 0.5
+    
+    @sample_rate    = 0.05
+    @timer          = 0.0
+    @slow_threshold = 0.4
+    @fast_threshold = 0.7
     
     @x = 0
     @y = 0
@@ -25,21 +30,38 @@ class MainModel
     @y += rotation_rate.y * @sample_rate
   end
   
-  def should_move_cursor?
-    (@x.abs > @threshold || @y.abs > @threshold) && close?(@timer % @move_rate, 0)
-  end
-  
   def cursor_direction
-    # NSLog @y.to_s
-    if @x > @threshold
-      TEXT_FIELD_WIDTH + 1
-    elsif @x < -@threshold
-      -(TEXT_FIELD_WIDTH + 1)
-    elsif @y > @threshold
-      1
-    elsif @y < -@threshold
-      -1
+    dir = 0
+    
+    if close?(@timer % @fast_vertical_move_rate, 0) && @x.abs > @fast_threshold
+      if @x > @fast_threshold
+        dir += TEXT_FIELD_WIDTH + 1
+      elsif @x < -@fast_threshold
+        dir -= TEXT_FIELD_WIDTH + 1
+      end
+    elsif close?(@timer % @slow_vertical_move_rate, 0) && @x.abs > @slow_threshold
+      if @x > @slow_threshold
+        dir += TEXT_FIELD_WIDTH + 1
+      elsif @x < -@slow_threshold
+        dir -= TEXT_FIELD_WIDTH + 1
+      end
     end
+    
+    if close?(@timer % @fast_horizontal_move_rate, 0) && @y.abs > @fast_threshold
+      if @y > @fast_threshold
+        dir += 1
+      elsif @y < -@fast_threshold
+        dir -= 1
+      end
+    elsif close?(@timer % @slow_horizontal_move_rate, 0) && @y.abs > @slow_threshold
+      if @y > @slow_threshold
+        dir += 1
+      elsif @y < -@slow_threshold
+        dir -= 1
+      end
+    end
+    
+    dir
   end
   
   def close?(a, b, epsilon = 0.05)
