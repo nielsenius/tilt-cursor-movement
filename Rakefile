@@ -9,7 +9,7 @@ rescue LoadError
 end
 
 Motion::Project::App.setup do |app|
-  app.name = 'Tiltor'
+  app.name = 'Tilter'
   app.frameworks << 'CoreMotion'
   # app.icons = ['icon_iphone_retina.png', 'icon_ipad_retina.png']
   # app.prerendered_icon = true

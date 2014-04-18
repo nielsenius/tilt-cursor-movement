@@ -40,6 +40,8 @@ class MainViewController < UIViewController
     load_test_button
     load_tilt_toggle
     load_tilt_label
+    load_gyro_reset_button
+    load_keyboard_down_button
     load_accelerometer
     
     center = NSNotificationCenter.defaultCenter
@@ -59,7 +61,7 @@ class MainViewController < UIViewController
   
   def load_test_button
     @test_button = self.view.viewWithTag 2
-    @test_button.addTarget(self, action: 'button_press:', forControlEvents: UIControlEventTouchDown)
+    @test_button.addTarget(self, action: 'test_button_press:', forControlEvents: UIControlEventTouchDown)
   end
   
   def load_tilt_toggle
@@ -68,6 +70,16 @@ class MainViewController < UIViewController
   
   def load_tilt_label
     @tilt_label = self.view.viewWithTag 4
+  end
+  
+  def load_gyro_reset_button
+    button = self.view.viewWithTag 5
+    button.addTarget(self, action: 'reset_button_press:', forControlEvents: UIControlEventTouchDown)
+  end
+  
+  def load_keyboard_down_button
+    button = self.view.viewWithTag 6
+    button.addTarget(self, action: 'down_button_press:', forControlEvents: UIControlEventTouchDown)
   end
   
   def load_accelerometer
@@ -133,7 +145,7 @@ class MainViewController < UIViewController
     (get_cursor_idx - target_idx).abs
   end
   
-  def button_press(sender)
+  def test_button_press(sender)
     # start and stop testing (begins where left off)
     if @testing
       @testing = false
@@ -144,6 +156,15 @@ class MainViewController < UIViewController
       sender.setTitle('Cancel Test', forState: UIControlStateNormal)
       begin_trial
     end
+  end
+  
+  def reset_button_press(sender)
+    @model.x = 0
+    @model.y = 0
+  end
+  
+  def down_button_press(sender)
+    @text_field.resignFirstResponder if @text_field.isFirstResponder      
   end
   
   def end_testing
@@ -171,7 +192,7 @@ class MainViewController < UIViewController
     @cursor_idx = get_cursor_idx
     
     # begin a new trial or end testing
-    if @trial <= 60
+    if @trial < 60
       begin_trial
     else
       end_testing
