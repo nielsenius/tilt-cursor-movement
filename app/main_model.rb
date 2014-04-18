@@ -10,10 +10,13 @@ class MainModel
     @slow_vertical_move_rate   = 0.8
     @fast_vertical_move_rate   = 0.5
     
-    @sample_rate    = 0.05
-    @timer          = 0.0
-    @slow_threshold = 0.4
-    @fast_threshold = 0.7
+    @slow_horizontal_threshold = 0.3
+    @fast_horizontal_threshold = 0.6
+    @slow_vertical_threshold   = 0.3
+    @fast_vertical_threshold   = 0.5
+    
+    @sample_rate = 0.05
+    @timer       = 0.0
     
     @x = 0
     @y = 0
@@ -33,30 +36,30 @@ class MainModel
   def cursor_direction
     dir = 0
     
-    if close?(@timer % @fast_vertical_move_rate, 0) && @x.abs > @fast_threshold
-      if @x > @fast_threshold
+    if close?(@timer % @fast_vertical_move_rate, 0) && @x.abs > @fast_vertical_threshold
+      if @x > @fast_vertical_threshold
         dir += TEXT_FIELD_WIDTH + 1
-      elsif @x < -@fast_threshold
+      elsif @x < -@fast_vertical_threshold
         dir -= TEXT_FIELD_WIDTH + 1
       end
-    elsif close?(@timer % @slow_vertical_move_rate, 0) && @x.abs > @slow_threshold
-      if @x > @slow_threshold
+    elsif close?(@timer % @slow_vertical_move_rate, 0) && @x.abs > @slow_vertical_threshold
+      if @x > @slow_vertical_threshold
         dir += TEXT_FIELD_WIDTH + 1
-      elsif @x < -@slow_threshold
+      elsif @x < -@slow_vertical_threshold
         dir -= TEXT_FIELD_WIDTH + 1
       end
     end
     
-    if close?(@timer % @fast_horizontal_move_rate, 0) && @y.abs > @fast_threshold
-      if @y > @fast_threshold
+    if close?(@timer % @fast_horizontal_move_rate, 0) && @y.abs > @fast_horizontal_threshold
+      if @y > @fast_horizontal_threshold
         dir += 1
-      elsif @y < -@fast_threshold
+      elsif @y < -@fast_horizontal_threshold
         dir -= 1
       end
-    elsif close?(@timer % @slow_horizontal_move_rate, 0) && @y.abs > @slow_threshold
-      if @y > @slow_threshold
+    elsif close?(@timer % @slow_horizontal_move_rate, 0) && @y.abs > @slow_horizontal_threshold
+      if @y > @slow_horizontal_threshold
         dir += 1
-      elsif @y < -@slow_threshold
+      elsif @y < -@slow_horizontal_threshold
         dir -= 1
       end
     end

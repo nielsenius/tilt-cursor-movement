@@ -129,7 +129,7 @@ class MainViewController < UIViewController
     cols_right = distance % @model.text_field_width
     cols_left  = @model.text_field_width % distance
     # use the smaller number of columns
-    cols_right < cols_left ? cols = cols_right : cols = cols_left
+    cols_right < cols_left && !cols_right.zero? ? cols = cols_right : cols = cols_left
     # add rows and columns
     rows + cols
   end
