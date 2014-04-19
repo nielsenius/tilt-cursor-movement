@@ -124,12 +124,13 @@ class MainViewController < UIViewController
     end
     # get the distance from the cursor to the target
     distance = (get_cursor_idx - target_idx).abs
+    distance = 1 if distance.zero?
     # calculate the number of rows and cols to target from cursor
     rows       = distance / @model.text_field_width
     cols_right = distance % @model.text_field_width
     cols_left  = @model.text_field_width % distance
     # use the smaller number of columns
-    cols_right < cols_left && !cols_right.zero? ? cols = cols_right : cols = cols_left
+    cols_right < cols_left ? cols = cols_right : cols = cols_left
     # add rows and columns
     rows + cols
   end
