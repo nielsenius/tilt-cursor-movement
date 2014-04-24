@@ -1,4 +1,4 @@
-# Tilt Device to Move Cursor
+# Tilter: Tilt-based Text Entry
 
 Final project for 05-499 - Interaction Techniques
 
