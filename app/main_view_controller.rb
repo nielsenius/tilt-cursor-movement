@@ -11,7 +11,7 @@ class MainViewController < UIViewController
 
   def viewDidLoad
     super
-    
+    # instance variables
     @model      = MainModel.new
     @testing    = false
     @trials     = (1..60).to_a.shuffle
@@ -20,7 +20,7 @@ class MainViewController < UIViewController
     @distance   = 0
     @error      = 0
     @cursor_idx = 0
-    
+    # load various views
     load_text_field
     load_test_button
     load_tilt_toggle
@@ -28,7 +28,7 @@ class MainViewController < UIViewController
     load_gyro_reset_button
     load_keyboard_down_button
     load_accelerometer
-    
+    # notification when text field changes
     center = NSNotificationCenter.defaultCenter
     center.addObserver(self, selector: "text_change", name: UITextViewTextDidChangeNotification, object: @text_field)
   end
@@ -68,13 +68,14 @@ class MainViewController < UIViewController
   end
   
   def load_accelerometer
+    # device motion
     @motion_manager = CMMotionManager.alloc.init
     @motion_manager.deviceMotionUpdateInterval = @model.sample_rate
     
     if (@motion_manager.isDeviceMotionAvailable)
       queue = NSOperationQueue.currentQueue
+      # handle device motion output
       @motion_manager.startDeviceMotionUpdatesToQueue(queue, withHandler: lambda do |motion, error|
-        # NSLog "X: %@, Y: %@, Z: %@", "%.3f" % motion.rotationRate.x, "%.3f" % motion.rotationRate.y, "%.3f" % motion.rotationRate.z
         handle_motion(motion.rotationRate)
       end)
     else
@@ -198,10 +199,12 @@ class MainViewController < UIViewController
   end
   
   def get_cursor_idx
+    # distance from beginning of text field to the cursor
     @text_field.offsetFromPosition(@text_field.beginningOfDocument, toPosition: @text_field.selectedTextRange.start)
   end
   
   def reset_cursor
+    # places the cursor at its old positions for testing purposes
     new_pos   = @text_field.positionFromPosition(@text_field.beginningOfDocument, offset: @cursor_idx - 1)
     new_range = @text_field.textRangeFromPosition(new_pos, toPosition: new_pos)
     
@@ -218,10 +221,12 @@ class MainViewController < UIViewController
     end
   end
   
+  # index of the append target indicator
   def append_idx
     @text_field.text.index('>')
   end
   
+  # index of the prepend target indicator
   def prepend_idx
     @text_field.text.index('<')
   end

@@ -8,7 +8,7 @@ class AppDelegate
     # and assign it as the root controller.
     @window.rootViewController = MainViewController.new
 
-    # this makes the window a receiver of events (for now we are using touch)
+    # this makes the window a receiver of events
     @window.makeKeyAndVisible
     
     # because this method must return true

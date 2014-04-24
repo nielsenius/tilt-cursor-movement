@@ -5,22 +5,23 @@ class MainModel
   TEXT_FIELD_WIDTH = 24
   
   def initialize
+    # movement rates (seconds)
     @slow_horizontal_move_rate = 0.5
     @fast_horizontal_move_rate = 0.1
     @slow_vertical_move_rate   = 0.8
     @fast_vertical_move_rate   = 0.5
-    
+    # tilt thresholds (radians)
     @slow_horizontal_threshold = 0.3
     @fast_horizontal_threshold = 0.6
     @slow_vertical_threshold   = 0.3
     @fast_vertical_threshold   = 0.5
-    
+    # sampling (seconds)
     @sample_rate = 0.05
     @timer       = 0.0
-    
-    @x = 0
-    @y = 0
-    
+    # x and y baselines (radians)
+    @x = 0.0
+    @y = 0.0
+    # testing
     @test_text   = "oooo oooo oooo oooo oooo\noooo oooo oooo oooo oooo\noooo oooo oooo oooo oooo"
     @word_length = 5 # 4 + 1 space
     @test_data   = []
@@ -28,14 +29,14 @@ class MainModel
   
   def update_movements(rotation_rate)
     @timer += @sample_rate
-    
+    # keep track of how far the device has tilted
     @x += rotation_rate.x * @sample_rate
     @y += rotation_rate.y * @sample_rate
   end
   
   def cursor_direction
     dir = 0
-    
+    # vertical movement
     if close?(@timer % @fast_vertical_move_rate, 0) && @x.abs > @fast_vertical_threshold
       if @x > @fast_vertical_threshold
         dir += TEXT_FIELD_WIDTH + 1
@@ -49,7 +50,7 @@ class MainModel
         dir -= TEXT_FIELD_WIDTH + 1
       end
     end
-    
+    # horizontal movement
     if close?(@timer % @fast_horizontal_move_rate, 0) && @y.abs > @fast_horizontal_threshold
       if @y > @fast_horizontal_threshold
         dir += 1
@@ -67,10 +68,12 @@ class MainModel
     dir
   end
   
+  # determine if two floats are reasonably close to equal
   def close?(a, b, epsilon = 0.05)
     (a - b).abs < epsilon
   end
   
+  # generates the text used in testing
   def generate_text(trial, type)
     text = @test_text.clone
     trial = trial % (text.length / @word_length)
@@ -87,6 +90,7 @@ class MainModel
     text
   end
   
+  # generates CSV data for testing purposes
   def format_data
     str = "Trial, Type, Time, Distance, Errors\n"
     
